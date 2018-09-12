@@ -1,78 +1,72 @@
 let numSquares = 6;
-let colors = generateRandomColors(numSquares);
-
+let colors = [];
+let pickedColor;
 let squares = document.querySelectorAll('.square');
-let pickedColor = pickColor();
 let displayRGB = document.getElementById('displayRGB');
 let message = document.getElementById('message');
 let head = document.getElementById('head');
-let reset = document.querySelector('#reset');
-let easyButton = document.querySelector('#easy');
-let hardButton = document.querySelector('#hard');
+let resetButton = document.querySelector('#resetButton');
+let modeButtons = document.querySelectorAll('.mode');
 
-easyButton.addEventListener('click', function() {
-  easyButton.classList.add('selected');
-  hardButton.classList.remove('selected');
-  numSquares = 3;
-  colors = generateRandomColors(numSquares);
-  pickedColor = pickColor();
-  displayRGB.textContent = pickedColor;
+init();
 
-  for (let i = 0; i < squares.length; i++) {
-    if (colors[i]) {
-      squares[i].style.backgroundColor = colors[i];
-    } else {
-      squares[i].style.display = 'none';
-    }
+function init() {
+  ModeSelecting();
+  squareSetup();
+  reset();
+}
+function ModeSelecting() {
+  for (let i = 0; i < modeButtons.length; i++) {
+    modeButtons[i].addEventListener('click', function() {
+      modeButtons[0].classList.remove('selected');
+      modeButtons[1].classList.remove('selected');
+      this.classList.add('selected');
+      this.textContent === 'EASY' ? (numSquares = 3) : (numSquares = 6);
+      reset();
+    });
   }
-});
-
-hardButton.addEventListener('click', function() {
-  hardButton.classList.add('selected');
-  easyButton.classList.remove('selected');
-  numSquares = 6;
-  colors = generateRandomColors(numSquares);
-  pickedColor = pickColor();
-  displayRGB.textContent = pickedColor;
-
+}
+function squareSetup() {
   for (let i = 0; i < squares.length; i++) {
-    squares[i].style.backgroundColor = colors[i];
-    squares[i].style.display = 'block';
+    squares[i].addEventListener('click', function() {
+      let clickedColor = this.style.backgroundColor;
+      if (clickedColor === pickedColor) {
+        message.textContent = 'Correct!';
+        changeColors(pickedColor);
+        head.style.backgroundColor = pickedColor;
+        resetButton.textContent = 'PLAY AGAIN!';
+      } else {
+        this.style.backgroundColor = '#232323';
+        message.textContent = 'Try again';
+      }
+    });
   }
-});
+}
 
-reset.addEventListener('click', function() {
-  // resetGame();
+function reset() {
   colors = generateRandomColors(numSquares);
   pickedColor = pickColor();
   displayRGB.textContent = pickedColor;
   message.textContent = '';
   head.style.backgroundColor = '#074874';
-  reset.textContent = 'NEW COLOR';
+  resetButton.textContent = 'NEW COLOR';
 
   for (let i = 0; i < squares.length; i++) {
-    squares[i].style.backgroundColor = colors[i];
-  }
-});
-
-displayRGB.textContent = pickedColor;
-
-for (let i = 0; i < squares.length; i++) {
-  squares[i].style.backgroundColor = colors[i];
-
-  squares[i].addEventListener('click', function() {
-    let clickedColor = this.style.backgroundColor;
-    if (clickedColor === pickedColor) {
-      message.textContent = 'Correct!';
-      changeColors(pickedColor);
-      head.style.backgroundColor = pickedColor;
-      reset.textContent = 'PLAY AGAIN!';
+    if (colors[i]) {
+      //color the squares w color[i] & show them
+      squares[i].style.backgroundColor = colors[i];
+      squares[i].style.display = 'block';
     } else {
-      this.style.backgroundColor = '#232323';
-      message.textContent = 'Try again';
+      //if there are 3 colors hide other squares
+      squares[i].style.display = 'none';
     }
-  });
+  }
+  return squares;
 }
+
+resetButton.addEventListener('click', function() {
+  reset();
+});
 
 function changeColors(color) {
   for (let i = 0; i < squares.length; i++) {
@@ -98,13 +92,3 @@ function randomColor() {
 
   return 'rgb(' + r + ',' + ' ' + g + ',' + ' ' + b + ')';
 }
-
-// function resetGame() {
-//   generateRandomColors(6);
-//   pickColor();
-//   for (let i = 0; i < squares.length; i++) {
-//     squares[i].style.backgroundColor = colors[i];
-//     // changeColors(pickedColor);
-//   }
-//   return squares;
-// }
